@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tradukay FR ↔ WO V1.6</title>
+  <script src="https://code.responsivevoice.org/responsivevoice.js?key=demo"></script>
+  <style>
+    :root {
+      --bg: #0F172A;
+      --card-bg: rgba(255,255,255,0.98);
+      --text: #1f2937;
+      --text-secondary: #64748b;
+      --gradient: linear-gradient(135deg, #16a34a 0%, #15803d 50%, #0ea5e9 100%);
+    }
+
+    [data-theme="light"] {
+      --bg: #f1f5f9;
+      --card-bg: rgba(255,255,255,0.98);
+      --text: #1f2937;
+      --text-secondary: #64748b;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      padding: 0;
+      overflow-x: hidden;
+      transition: background 0.3s;
+    }
+
+.bg-gradient {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 300px;
+      background: var(--gradient);
+      z-index: 0;
+    }
+
+.app {
+      max-width: 500px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+      padding: 16px;
+    }
+
+.header {
+      text-align: center;
+      color: white;
+      padding: 40px 0 20px;
+      position: relative;
+    }
+.header h1 {
+      font-size: 36px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      cursor: pointer;
+      user-select: none;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+.header p {
+      opacity: 0.9;
+      font-size: 14px;
+      margin-top: 8px;
+    }
+.header-actions {
+      position: absolute;
+      top: 40px;
+      right: 0;
+      display: flex;
+      gap: 8px;
+    }
+.icon-btn {
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      font-size: 18px;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      transition: all 0.2s;
+    }
+.icon-btn:active { transform: scale(0.9); }
+
+.stats-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+.stat-card {
+      flex: 1;
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 16px;
+      padding: 16px;
+      text-align: center;
+      color: white;
+      position: relative;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+.stat-card:active { transform: scale(0.95); }
+.stat-num { font-size: 24px; font-weight: 800; }
+.stat-label { font-size: 12px; opacity: 0.8; margin-top: 4px; }
+.badge {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: #ef4444;
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 12px;
+      min-width: 20px;
+    }
+
+.card {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.5);
+      transition: background 0.3s;
+    }
+
+.search-box {
+      position: relative;
+      margin-bottom: 16px;
+    }
+.search-input {
+      width: 100%;
+      padding: 14px 14px 14px 44px;
+      border: 2px solid #e5e7eb;
+      border-radius: 16px;
+      font-size: 15px;
+      background: #f8fafc;
+      color: var(--text);
+    }
+.search-input:focus {
+      outline: none;
+      border-color: #16a34a;
+      background: white;
+    }
+.search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 18px;
+      opacity: 0.5;
+    }
+.suggestions {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: white;
+      border-radius: 12px;
+      margin-top: 4px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      max-height: 200px;
+      overflow-y: auto;
+      z-index: 100;
+      display: none;
+    }
+.suggestions.active { display: block; }
+.suggestion-item {
+      padding: 12px 16px;
+      cursor: pointer;
+      border-bottom: 1px solid #f1f5f9;
+      color: var(--text);
+    }
+.suggestion-item:hover { background: #f8fafc; }
+.suggestion-item:last-child { border-bottom: none; }
+
+.lang-switch {
+      display: flex; align-items: center; justify-content: space-between;
+      background: #f1f5f9; padding: 14px; border-radius: 16px; margin-bottom: 16px;
+    }
+    [data-theme="light"].lang-switch { background: #e2e8f0; }
+.lang { font-weight: 800; font-size: 16px; color: var(--text); }
+.switch-btn {
+      background: linear-gradient(135deg, #16a34a, #15803d);
+      color: white; border: none;
+      width: 44px; height: 44px; border-radius: 50%; font-size: 20px;
+      cursor: pointer; transition: all 0.3s;
+      box-shadow: 0 4px 12px rgba(22,163,74,0.4);
+    }
+.switch-btn:active { transform: scale(0.9) rotate(180deg); }
+
+    textarea {
+      width: 100%; padding: 16px; border: 2px solid #e5e7eb;
+      border-radius: 16px; font-size: 16px; resize: none; margin: 8px 0;
+      transition: all 0.2s; background: white; color: var(--text);
+    }
+    textarea:focus { outline: none; border-color: #16a34a; box-shadow: 0 0 0 3px rgba(22,163,74,0.1); }
+
+.btn {
+      width: 100%; padding: 18px;
+      background: linear-gradient(135deg, #16a34a, #15803d);
+      color: white; border: none; border-radius: 16px;
+      font-size: 16px; font-weight: 700; margin: 8px 0; cursor: pointer;
+      transition: all 0.2s; box-shadow: 0 4px 12px rgba(22,163,74,0.3);
+    }
+.btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(22,163,74,0.4); }
+.btn:active { transform: translateY(0); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-blue {
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      box-shadow: 0 4px 12px rgba(59,130,246,0.3);
+    }
+.btn-red {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      box-shadow: 0 4px 12px rgba(239,68,68,0.3);
+    }
+.btn-purple {
+      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+      box-shadow: 0 4px 12px rgba(139,92,246,0.3);
+    }
+.btn-green {
+      background: linear-gradient(135deg, #10b981, #059669);
+      box-shadow: 0 4px 12px rgba(16,185,129,0.3);
+    }
+
+.resultat {
+      background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+      border: 2px solid #16a34a;
+      padding: 18px; border-radius: 16px; margin-top: 16px; min-height: 70px;
+      font-size: 18px; font-weight: 600; color: #15803d;
+      animation: slideIn 0.3s ease-out;
+      position: relative;
+    }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+.resultat-actions {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      display: flex;
+      gap: 8px;
+    }
+.action-btn {
+      background: rgba(255,255,255,0.8);
+      border: none;
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+.action-btn:active { transform: scale(0.9); }
+.action-btn.active { background: #fbbf24; }
+
+.btn-row {
+      display: flex;
+      gap: 8px;
+      margin: 8px 0;
+    }
+.btn-row.btn {
+      flex: 1;
+      margin: 0;
+    }
+
+.hist-title {
+      margin-top: 24px; color: var(--text); font-size: 16px; font-weight: 800;
+    }
+.hist-item {
+      background: #f8fafc; padding: 12px; border-radius: 12px;
+      margin: 8px 0; color: #334155; font-size: 14px;
+      border-left: 3px solid #16a34a;
+      animation: fadeIn 0.3s ease-out;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    [data-theme="light"].hist-item { background: #e2e8f0; }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+.hist-star {
+      background: none;
+      border: none;
+      font-size: 18px;
+      cursor: pointer;
+      opacity: 0.3;
+      transition: all 0.2s;
+    }
+.hist-star.active { opacity: 1; }
+
+.footer {
+      text-align: center; color: rgba(255,255,255,0.6);
+      font-size: 12px; margin-top: 24px; padding-bottom: 20px;
+    }
+.loading { text-align: center; color: #16a34a; font-weight: 700; padding: 10px; }
+
+.modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: var(--bg);
+      z-index: 1000;
+      overflow-y: auto;
+      padding: 16px;
+    }
+.modal.active { display: block; }
+.modal-header {
+      color: white;
+      padding: 20px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+.modal-header h2 { font-size: 24px; font-weight: 800; }
+.btn-close {
+      background: rgba(255,255,255,0.1);
+      border: none;
+      color: white;
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      font-size: 20px;
+      cursor: pointer;
+    }
+.mot-item {
+      background: var(--card-bg);
+      padding: 14px;
+      border-radius: 12px;
+      margin: 8px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--text);
+      transition: all 0.2s;
+    }
+.mot-item:active { transform: scale(0.98); }
+.empty-state {
+      text-align: center;
+      color: rgba(255,255,255,0.5);
+      padding: 60px 20px;
+    }
+
+.toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #1f2937;
+      color: white;
+      padding: 14px 24px;
+      border-radius: 12px;
+      font-weight: 600;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+      z-index: 2000;
+      opacity: 0;
+      transition: all 0.3s;
+    }
+.toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-gradient"></div>
+
+  <div class="app" id="mainApp">
+    <div class="header">
+      <div class="header-actions">
+        <button class="icon-btn" onclick="ouvrirFavoris()">⭐</button>
+        <button class="icon-btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
+      </div>
+      <h1 id="titreApp">🇸🇳 Tradukay V1.6</h1>
+      <p id="nbMots">Français ↔ Wolof - Chargement...</p>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card" onclick="voirStats()">
+        <div class="stat-num" id="statMots">0</div>
+        <div class="stat-label">Mots</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="statTrad">0</div>
+        <div class="stat-label">Traductions</div>
+      </div>
+      <div class="stat-card" onclick="voirMotsManquants()">
+        <div class="stat-num" id="statManquants">0</div>
+        <div class="stat-label">Manquants</div>
+        <div class="badge" id="badgeManquants" style="display:none;">!</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div id="loading" class="loading">Chargement du dictionnaire...</div>
+
+      <div class="search-box" id="searchBox" style="display:none">
+        <span class="search-icon">🔍</span>
+        <input type="text" class="search-input" id="searchInput" placeholder="Rechercher un mot..." oninput="rechercherMot()">
+        <div class="suggestions" id="suggestions"></div>
+      </div>
+
+      <div class="lang-switch" id="appContent" style="display:none">
+        <span class="lang" id="lang1">Français</span>
+        <button class="switch-btn" onclick="switchLang()">⇄</button>
+        <span class="lang" id="lang2">Wolof</span>
+      </div>
+
+      <textarea id="inputText" rows="4" placeholder="Dugal li ngay firndel..." style="display:none"></textarea>
+      <button class="btn" onclick="traduire()" id="btnTrad" style="display:none">✨ Firndel / Traduire</button>
+
+      <div class="resultat" id="resultat" style="display:none">
+        Traduction bi feeñ ci...
+        <div class="resultat-actions" id="resultatActions" style="display:none">
+          <button class="action-btn" onclick="toggleFavori()" id="btnFav" title="Favori">⭐</button>
+        </div>
+      </div>
+
+      <div class="btn-row" id="btnRow" style="display:none">
+        <button class="btn btn-green" onclick="ecouterAudio()" id="btnEcouter">🔊 Écouter</button>
+        <button class="btn btn-blue" onclick="copier()">📋 Copier</button>
+        <button class="btn btn-purple" onclick="partager()">📤 Partager</button>
+      </div>
+
+      <h3 class="hist-title" id="histTitre" style="display:none">📜 Historique</h3>
+      <div id="historique"></div>
+    </div>
+
+    <div class="footer">
+      Créé avec ❤️ par <strong>EL HADJI WACK BA</strong> sur SPCK | V1.6 - 100% Gratuit
+    </div>
+  </div>
+
+  <!-- MODAL MOTS MANQUANTS -->
+  <div class="modal" id="modalMotsManquants">
+    <div class="app">
+      <div class="modal-header">
+        <h2>📝 Mots Manquants</h2>
+        <button class="btn-close" onclick="fermerModal('modalMotsManquants')">✕</button>
+      </div>
+
+      <button class="btn btn-purple" onclick="exporterMotsManquants()" style="margin-bottom: 8px;">
+        📥 Exporter en.txt
+      </button>
+
+      <button class="btn btn-red" onclick="confirmerEffacer()" style="margin-bottom: 16px;">
+        🗑️ Effacer l'historique
+      </button>
+
+      <div id="listeMotsManquants"></div>
+    </div>
+  </div>
+
+  <!-- MODAL FAVORIS -->
+  <div class="modal" id="modalFavoris">
+    <div class="app">
+      <div class="modal-header">
+        <h2>⭐ Favoris</h2>
+        <button class="btn-close" onclick="fermerModal('modalFavoris')">✕</button>
+      </div>
+      <div id="listeFavoris"></div>
+    </div>
+  </div>
+
+  <!-- MODAL STATS -->
+  <div class="modal" id="modalStats">
+    <div class="app">
+      <div class="modal-header">
+        <h2>📊 Statistiques</h2>
+        <button class="btn-close" onclick="fermerModal('modalStats')">✕</button>
+      </div>
+      <div id="statsContent"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+  let dico = {};
+  let sens = "fr-wo";
+  let compteurTraductions = parseInt(localStorage.getItem('compteurTraductions') || '0');
+  let traductionActuelle = null;
+  let estEnTrainDeParler = false;
+
+  // === INIT ===
+  function init() {
+    initTheme();
+  }
+
+  // === THEME ===
+  function initTheme() {
+    const theme = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', theme);
+    document.getElementById('themeBtn').textContent = theme === 'dark'? '☀️' : '🌙';
+  }
+
+  function toggleTheme() {
+    const current = document.documentElement.getAttribute('data-theme');
+    const newTheme = current === 'dark'? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    document.getElementById('themeBtn').textContent = newTheme === 'dark'? '☀️' : '🌙';
+    showToast(newTheme === 'dark'? 'Mode sombre activé' : 'Mode clair activé');
+  }
+
+  // === TOAST ===
+  function showToast(message) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2000);
+  }
+
+  // === SON ===
+  function playSound() {
+    const audio = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=');
+    audio.volume = 0.2;
+    audio.play().catch(() => {});
+  }
+
+// === AUDIO VERSION APK - MARCHE À 100% ===
+  function ecouterAudio() {
+    if (!traductionActuelle) {
+      showToast('Traduis d\'abord un mot reuf');
+      return;
+    }
+
+    const texte = sens === 'fr-wo'? traductionActuelle.traduit : traductionActuelle.source;
+    const btn = document.getElementById('btnEcouter');
+
+    // Annule toute lecture en cours
+    speechSynthesis.cancel();
+
+    const utterance = new SpeechSynthesisUtterance(texte);
+    utterance.lang = 'fr-FR';
+    utterance.rate = 0.9;
+    utterance.pitch = 1;
+    utterance.volume = 1;
+
+    utterance.onstart = () => {
+      btn.textContent = '⏸️ Stop';
+      showToast('🔊 Lecture...');
+    };
+
+    utterance.onend = () => {
+      btn.textContent = '🔊 Écouter';
+    };
+
+    utterance.onerror = () => {
+      showToast('Erreur audio');
+      btn.textContent = '🔊 Écouter';
+    };
+
+    // Dans l'APK, speechSynthesis marche nativement
+    speechSynthesis.speak(utterance);
+  } 
+
+  // CHARGE LE DICO.JSON
+  fetch('dico.json')
+.then(response => response.json())
+.then(data => {
+      dico = data;
+      let nbMots = Object.keys(dico).length;
+      document.getElementById('nbMots').textContent = `Français ↔ Wolof - ${nbMots} mots`;
+      document.getElementById('statMots').textContent = nbMots;
+      document.getElementById('statTrad').textContent = compteurTraductions;
+      updateStatsManquants();
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('searchBox').style.display = 'block';
+      document.getElementById('appContent').style.display = 'flex';
+      document.getElementById('inputText').style.display = 'block';
+      document.getElementById('btnTrad').style.display = 'block';
+      document.getElementById('resultat').style.display = 'block';
+      document.getElementById('btnRow').style.display = 'flex';
+      document.getElementById('histTitre').style.display = 'block';
+      init();
+      chargerHistorique();
+    })
+.catch(err => {
+      document.getElementById('loading').textContent = 'Erreur: dico.json introuvable!';
+      document.getElementById('loading').style.color = 'red';
+    });
+
+  // === RECHERCHE ===
+  function rechercherMot() {
+    const query = document.getElementById('searchInput').value.toLowerCase().trim();
+    const suggestions = document.getElementById('suggestions');
+
+    if (query.length < 2) {
+      suggestions.classList.remove('active');
+      return;
+    }
+
+    const mots = Object.keys(dico).filter(m => m.toLowerCase().includes(query)).slice(0, 5);
+
+    if (mots.length > 0) {
+      suggestions.innerHTML = mots.map(m => `
+        <div class="suggestion-item" onclick="selectionnerMot('${m}')">${m} → ${dico[m]}</div>
+      `).join('');
+      suggestions.classList.add('active');
+    } else {
+      suggestions.classList.remove('active');
+    }
+  }
+
+  function selectionnerMot(mot) {
+    document.getElementById('inputText').value = mot;
+    document.getElementById('suggestions').classList.remove('active');
+    document.getElementById('searchInput').value = '';
+    traduire();
+  }
+
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.search-box')) {
+      document.getElementById('suggestions').classList.remove('active');
+    }
+  });
+
+  function switchLang() {
+    sens = sens === "fr-wo"? "wo-fr" : "fr-wo";
+    document.getElementById('lang1').textContent = sens === "fr-wo"? "Français" : "Wolof";
+    document.getElementById('lang2').textContent = sens === "fr-wo"? "Wolof" : "Français";
+    document.getElementById('inputText').value = "";
+    document.getElementById('resultat').textContent = "Traduction bi feeñ ci...";
+    document.getElementById('resultatActions').style.display = 'none';
+    playSound();
+  }
+
+  function traduire() {
+    let texte = document.getElementById('inputText').value.toLowerCase().trim();
+    if(!texte) {
+      document.getElementById('resultat').textContent = "Dugal ab baat reuf!";
+      return;
+    }
+
+    let resultat = "";
+    let motSource = texte;
+    let motTraduit = "";
+
+    if(sens === "fr-wo") {
+      if(dico[texte]) {
+        resultat = dico[texte];
+        motTraduit = dico[texte];
+      } else {
+        resultat = texte;
+        motTraduit = texte;
+        sauvegarderMotManquant(texte);
+      }
+    } else {
+      let motFr = Object.keys(dico).find(key => dico[key].toLowerCase() === texte);
+      if(motFr) {
+        resultat = motFr;
+        motTraduit = motFr;
+      } else {
+        resultat = texte;
+        motTraduit = texte;
+        sauvegarderMotManquant(texte);
+      }
+    }
+
+    const resEl = document.getElementById('resultat');
+    resEl.style.animation = 'none';
+    setTimeout(() => resEl.style.animation = '', 10);
+    resEl.textContent = resultat;
+    playSound();
+
+    traductionActuelle = { source: motSource, traduit: motTraduit };
+    document.getElementById('resultatActions').style.display = 'flex';
+    ajouterHistorique(motSource, motTraduit);
+    compteurTraductions++;
+    localStorage.setItem('compteurTraductions', compteurTraductions);
+    document.getElementById('statTrad').textContent = compteurTraductions;
+    updateBoutonFavori();
+  }
+
+  function sauvegarderMotManquant(mot) {
+    let motsManquants = JSON.parse(localStorage.getItem('motsManquants') || '[]');
+    if(!motsManquants.includes(mot)) {
+      motsManquants.unshift(mot);
+      if(motsManquants.length > 100) motsManquants.pop();
+      localStorage.setItem('motsManquants', JSON.stringify(motsManquants));
+      updateStatsManquants();
+    }
+  }
+
+  function updateStatsManquants() {
+    let mots = JSON.parse(localStorage.getItem('motsManquants') || '[]');
+    document.getElementById('statManquants').textContent = mots.length;
+    const badge = document.getElementById('badgeManquants');
+    badge.style.display = mots.length > 0? 'block' : 'none';
+    badge.textContent = mots.length;
+  }
+
+  function copier() {
+    let texte = document.getElementById('resultat').textContent;
+    if(texte === "Traduction bi feeñ ci..." || texte === "Dugal ab baat reuf!") return;
+    navigator.clipboard.writeText(texte);
+    showToast('Copié ✅');
+  }
+
+  function partager() {
+    if (!traductionActuelle) return;
+    const texte = `${traductionActuelle.source} → ${traductionActuelle.traduit}\n\nTraduit avec Tradukay 🇸🇳`;
+    if (navigator.share) {
+      navigator.share({ text: texte }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(texte);
+      showToast('Texte copié pour partage 📤');
+    }
+  }
+
+  // === FAVORIS ===
+  function toggleFavori() {
+    if (!traductionActuelle) return;
+    let favoris = JSON.parse(localStorage.getItem('favoris') || '[]');
+    const key = `${traductionActuelle.source}|${traductionActuelle.traduit}`;
+    const index = favoris.findIndex(f => f.key === key);
+
+    if (index > -1) {
+      favoris.splice(index, 1);
+      showToast('Retiré des favoris');
+    } else {
+      favoris.unshift({ key,...traductionActuelle });
+      showToast('Ajouté aux favoris ⭐');
+    }
+    localStorage.setItem('favoris', JSON.stringify(favoris));
+    updateBoutonFavori();
+  }
+
+  function updateBoutonFavori() {
+    if (!traductionActuelle) return;
+    let favoris = JSON.parse(localStorage.getItem('favoris') || '[]');
+    const key = `${traductionActuelle.source}|${traductionActuelle.traduit}`;
+    const btn = document.getElementById('btnFav');
+    if (favoris.some(f => f.key === key)) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  }
+
+  function ouvrirFavoris() {
+    document.getElementById('modalFavoris').classList.add('active');
+    afficherFavoris();
+  }
+
+  function afficherFavoris() {
+    let favoris = JSON.parse(localStorage.getItem('favoris') || '[]');
+    let liste = document.getElementById('listeFavoris');
+
+    if(favoris.length === 0) {
+      liste.innerHTML = `<div class="empty-state">
+        <div style="font-size: 48px; margin-bottom: 16px;">⭐</div>
+        <div>Aucun favori</div>
+        <div style="font-size: 12px; margin-top: 8px; opacity: 0.7;">Ajoute des traductions en favoris</div>
+      </div>`;
+    } else {
+      liste.innerHTML = favoris.map((f, index) => `
+        <div class="mot-item">
+          <span><strong>${f.source}</strong> → ${f.traduit}</span>
+          <button onclick="supprimerFavori(${index})" style="background:none;border:none;color:#ef4444;font-size:18px;cursor:pointer;">✕</button>
+        </div>
+      `).join('');
+    }
+  }
+
+  function supprimerFavori(index) {
+    let favoris = JSON.parse(localStorage.getItem('favoris') || '[]');
+    favoris.splice(index, 1);
+    localStorage.setItem('favoris', JSON.stringify(favoris));
+    afficherFavoris();
+    updateBoutonFavori();
+    showToast('Favori supprimé');
+  }
+
+  // === HISTORIQUE ===
+  function ajouterHistorique(fr, wo) {
+    let hist = JSON.parse(localStorage.getItem('historique') || '[]');
+    hist.unshift({ fr, wo, date: Date.now() });
+    if (hist.length > 50) hist.pop();
+    localStorage.setItem('historique', JSON.stringify(hist));
+    afficherHistorique();
+  }
+
+  function chargerHistorique() {
+    afficherHistorique();
+  }
+
+  function afficherHistorique() {
+    let hist = JSON.parse(localStorage.getItem('historique') || '[]');
+    let histEl = document.getElementById('historique');
+    let favoris = JSON.parse(localStorage.getItem('favoris') || '[]');
+
+    histEl.innerHTML = hist.slice(0, 10).map(h => {
+      const key = `${h.fr}|${h.wo}`;
+      const isFav = favoris.some(f => f.key === key);
+      return `
+        <div class="hist-item">
+          <span>${h.fr} → ${h.wo}</span>
+          <button class="hist-star ${isFav? 'active' : ''}" onclick="toggleFavFromHist('${h.fr}', '${h.wo}')">⭐</button>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function toggleFavFromHist(fr, wo) {
+    traductionActuelle = { source: fr, traduit: wo };
+    toggleFavori();
+    afficherHistorique();
+  }
+
+  document.getElementById('inputText').addEventListener('keypress', function(e) {
+    if(e.key === 'Enter' &&!e.shiftKey) {
+      e.preventDefault();
+      traduire();
+    }
+  });
+
+  // === 5 TAPS SUR LE TITRE ===
+  let compteur = 0;
+  let lastTapTime = 0;
+  document.getElementById('titreApp').addEventListener('click', function() {
+    const now = Date.now();
+    if (now - lastTapTime > 1000) compteur = 0;
+    lastTapTime = now;
+    compteur++;
+
+    if(compteur === 5) {
+      compteur = 0;
+      voirMotsManquants();
+    }
+  });
+
+  // === MODAL MOTS MANQUANTS ===
+  function voirMotsManquants() {
+    document.getElementById('modalMotsManquants').classList.add('active');
+    afficherMotsManquants();
+  }
+
+  function fermerModal(id) {
+    document.getElementById(id).classList.remove('active');
+  }
+
+  function afficherMotsManquants() {
+    let mots = JSON.parse(localStorage.getItem('motsManquants') || '[]');
+    let liste = document.getElementById('listeMotsManquants');
+
+    if(mots.length === 0) {
+      liste.innerHTML = `<div class="empty-state">
+        <div style="font-size: 48px; margin-bottom: 16px;">✅</div>
+        <div>Aucun mot manquant</div>
+        <div style="font-size: 12px; margin-top: 8px; opacity: 0.7;">Ton dico est complet reuf!</div>
+      </div>`;
+    } else {
+      liste.innerHTML = mots.map((mot, index) => `
+        <div class="mot-item" onclick="copierMot('${mot}')">
+          <span><strong>${index + 1}.</strong> ${mot}</span>
+          <button onclick="event.stopPropagation(); supprimerMot(${index})" style="background:none;border:none;color:#ef4444;font-size:18px;cursor:pointer;">✕</button>
+        </div>
+      `).join('');
+    }
+  }
+
+  function copierMot(mot) {
+    navigator.clipboard.writeText(mot);
+    showToast(`"${mot}" copié 📋`);
+  }
+
+  function supprimerMot(index) {
+    let mots = JSON.parse(localStorage.getItem('motsManquants') || '[]');
+    mots.splice(index, 1);
+    localStorage.setItem('motsManquants', JSON.stringify(mots));
+    afficherMotsManquants();
+    updateStatsManquants();
+    showToast('Mot supprimé');
+  }
+
+  function confirmerEffacer() {
+    if(confirm('Effacer tous les mots manquants?\nCette action est irréversible.')) {
+      localStorage.removeItem('motsManquants');
+      afficherMotsManquants();
+      updateStatsManquants();
+      showToast('Historique effacé ✅');
+    }
+  }
+
+  function exporterMotsManquants() {
+    let mots = JSON.parse(localStorage.getItem('motsManquants') || '[]');
+    if(mots.length === 0) {
+      showToast('Aucun mot à exporter');
+      return;
+    }
+
+    const contenu = `MOTS MANQUANTS - Tradukay V1.6\nDate: ${new Date().toLocaleDateString('fr-FR')}\nTotal: ${mots.length} mots\n\n${mots.map((m, i) => `${i+1}. ${m}`).join('\n')}`;
+    const blob = new Blob([contenu], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `mots_manquants_${Date.now()}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('Fichier téléchargé 📥');
+  }
+
+  // === MODAL STATS ===
+  function voirStats() {
+    document.getElementById('modalStats').classList.add('active');
+    afficherStats();
+  }
+
+  function afficherStats() {
+    const hist = JSON.parse(localStorage.getItem('historique') || '[]');
+    const favoris = JSON.parse(localStorage.getItem('favoris') || '[]');
+    const manquants = JSON.parse(localStorage.getItem('motsManquants') || '[]');
+
+    const aujourdhui = new Date().toDateString();
+    const tradAujourdhui = hist.filter(h => new Date(h.date).toDateString() === aujourdhui).length;
+
+    const statsHTML = `
+      <div style="color: white;">
+        <div class="mot-item" style="background: rgba(255,255,255,0.1); margin-bottom: 12px;">
+          <span>📚 Total mots dico</span>
+          <strong>${Object.keys(dico).length}</strong>
+        </div>
+        <div class="mot-item" style="background: rgba(255,255,255,0.1); margin-bottom: 12px;">
+          <span>🔄 Traductions totales</span>
+          <strong>${compteurTraductions}</strong>
+        </div>
+        <div class="mot-item" style="background: rgba(255,255,255,0.1); margin-bottom: 12px;">
+          <span>📅 Traductions aujourd'hui</span>
+          <strong>${tradAujourdhui}</strong>
+        </div>
+        <div class="mot-item" style="background: rgba(255,255,255,0.1); margin-bottom: 12px;">
+          <span>⭐ Favoris sauvegardés</span>
+          <strong>${favoris.length}</strong>
+        </div>
+        <div class="mot-item" style="background: rgba(255,255,255,0.1); margin-bottom: 12px;">
+          <span>❌ Mots manquants</span>
+          <strong>${manquants.length}</strong>
+        </div>
+        <div class="mot-item" style="background: rgba(255,255,255,0.1);">
+          <span>📜 Historique</span>
+          <strong>${hist.length} entrées</strong>
+        </div>
+      </div>
+    `;
+    document.getElementById('statsContent').innerHTML = statsHTML;
+  }
+</script>
+</body>
+</html>
