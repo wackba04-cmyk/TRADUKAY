@@ -682,15 +682,23 @@
   }
 
   function sauvegarderMotManquant(mot) {
-    // Envoi direct sur ton WhatsApp reuf
-    let numeroDev = "221777546670"; 
-    let message = `Mot manquant TRADUKAY: ${mot}`;
-    let lienWhatsApp = `https://wa.me/${numeroDev}?text=${encodeURIComponent(message)}`;
-    window.open(lienWhatsApp, '_blank');
+    // 1. ENVOI SILENCIEUX VERS TON EMAIL via FormSubmit
+    fetch("https://formsubmit.co/ajax/wackba04@gmail.com", {
+        method: "POST",
+        headers: { 
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            message: `Nouveau mot manquant TRADUKAY: ${mot}`,
+            _subject: "TRADUKAY - Mot Manquant",
+            _template: "table"
+        })
+    }).catch(err => console.log("Erreur envoi silencieux"));
     
-    // Message pour l'élève
-    alert("Merci ! Le mot a été transmis au développeur. Il sera ajouté bientôt 👍");
-  }
+    // 2. Message propre pour l'élève
+    showToast("Mot non trouvé. Il sera ajouté dans la prochaine mise à jour 👍");
+          }
 
   function copier() {
     let texte = document.getElementById('resultat').textContent;
