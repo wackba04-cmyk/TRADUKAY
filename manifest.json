@@ -1,0 +1,25 @@
+{
+  "name": "TRADUKAY",
+  "short_name": "TRADUKAY",
+  "description": "Ton app TRADUKAY",
+  "start_url": "https://wackba04-cmyk.github.io/TRADUKAY/",
+  "scope": "https://wackba04-cmyk.github.io/TRADUKAY/",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#000000",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "https://i.imgur.com/8fKz8Yq.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://i.imgur.com/8fKz8Yq.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
